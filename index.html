@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>artem.suslov ~ portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+        :root {
+            --green: #00ff9d;
+            --green-dim: #00cc7a;
+            --green-dark: #003d25;
+            --red: #ff4b6e;
+            --yellow: #ffd166;
+            --blue: #4fc3f7;
+            --purple: #b48eff;
+            --bg: #0c0c0f;
+            --bg2: #111115;
+            --bg3: #1a1a20;
+            --border: #2a2a35;
+            --text: #c8c8d0;
+            --text-dim: #5a5a6e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ─── SCANLINES ─────────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ─── BOOT SCREEN ────────────────────────────────── */
+        #bootScreen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            gap: 8px;
+        }
+
+        .boot-logo {
+            font-size: clamp(28px, 5vw, 52px);
+            font-weight: 700;
+            color: var(--green);
+            letter-spacing: 6px;
+            text-shadow: 0 0 30px rgba(0,255,157,0.6), 0 0 60px rgba(0,255,157,0.2);
+            animation: logoGlow 2s ease-in-out infinite alternate;
+            margin-bottom: 16px;
+        }
+
+        @keyframes logoGlow {
+            from { text-shadow: 0 0 20px rgba(0,255,157,0.4); }
+            to   { text-shadow: 0 0 40px rgba(0,255,157,0.9), 0 0 80px rgba(0,255,157,0.3); }
+        }
+
+        .boot-line {
+            font-size: 12px;
+            color: var(--text-dim);
+            opacity: 0;
+            transform: translateX(-10px);
+            animation: bootFade 0.3s forwards;
+        }
+
+        .boot-line.green  { color: var(--green); }
+        .boot-line.yellow { color: var(--yellow); }
+        .boot-line.red    { color: var(--red); }
+
+        @keyframes bootFade {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .boot-bar-wrap {
+            width: 320px;
+            height: 2px;
+            background: var(--border);
+            margin-top: 24px;
+            border-radius: 2px;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .boot-bar-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--green-dim), var(--green));
+            border-radius: 2px;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 8px rgba(0,255,157,0.6);
+        }
+
+        /* ─── MAIN LAYOUT ────────────────────────────────── */
+        .workspace {
+            width: 100%;
+            height: 100vh;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .workspace.visible { opacity: 1; }
+
+        /* ─── TERMINAL WINDOW ────────────────────────────── */
+        .terminal-window {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            box-shadow: 0 0 0 1px rgba(0,255,157,0.04), 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        .win-header {
+            background: var(--bg3);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            flex-shrink: 0;
+        }
+
+        .win-dots { display: flex; gap: 6px; }
+        .win-dot {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+        }
+        .dot-r { background: #ff5f57; }
+        .dot-y { background: #ffbd2e; }
+        .dot-g { background: #28ca42; }
+
+        .win-title {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .win-status {
+            font-size: 11px;
+            color: var(--green);
+            opacity: 0.6;
+        }
+
+        /* ─── OUTPUT ─────────────────────────────────────── */
+        #output {
+            flex: 1;
+            padding: 18px 20px;
+            overflow-y: auto;
+            min-height: 0;
+            scroll-behavior: smooth;
+        }
+
+        #output::-webkit-scrollbar { width: 4px; }
+        #output::-webkit-scrollbar-track { background: transparent; }
+        #output::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .line {
+            line-height: 1.6;
+            font-size: 13.5px;
+            margin-bottom: 2px;
+            animation: lineFade 0.15s ease forwards;
+            max-width: 800px;
+        }
+
+        @keyframes lineFade {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .line.user    { color: var(--green); }
+        .line.success { color: var(--green); }
+        .line.error   { color: var(--red); }
+        .line.warn    { color: var(--yellow); }
+        .line.info    { color: var(--blue); }
+        .line.purple  { color: var(--purple); }
+        .line.dim     { color: var(--text-dim); }
+        .line.header  {
+            color: var(--green);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+        .line.bot-msg {
+            color: var(--purple);
+            padding-left: 4px;
+            border-left: 2px solid var(--purple);
+        }
+        .line.user-msg {
+            color: var(--text);
+            padding-left: 4px;
+            border-left: 2px solid var(--text-dim);
+        }
+        .line a {
+            color: var(--blue);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .line a:hover { color: var(--green); }
+        .smiley-logo {
+            display: block;
+            font-size: 30px;
+            line-height: 1;
+            color: var(--green);
+            text-shadow: 0 0 14px rgba(0,255,157,0.5);
+            margin: 4px 0 2px;
+            letter-spacing: 1px;
+        }
+
+        /* проект в списке */
+        .proj { margin: 6px 0 14px; }
+        .proj-title { color: var(--purple); font-weight: 700; font-size: 14px; }
+        .proj-desc  { color: var(--text); font-size: 13px; line-height: 1.55; margin-top: 2px; }
+        .proj-link  { color: var(--blue); font-size: 12px; }
+
+        /* очищение после hack */
+        .cleanse-bar {
+            width: 280px; height: 3px; margin: 18px auto 0;
+            background: rgba(0,255,157,0.15); border-radius: 3px; overflow: hidden;
+        }
+        .cleanse-fill {
+            height: 100%; width: 0;
+            background: linear-gradient(90deg, var(--green-dim), var(--green));
+            box-shadow: 0 0 10px var(--green);
+            transition: width 0.12s linear;
+        }
+
+        /* ─── INPUT LINE ─────────────────────────────────── */
+        .input-row {
+            padding: 10px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .prompt {
+            color: var(--green);
+            font-size: 13.5px;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .prompt .at   { color: var(--text-dim); }
+        .prompt .host { color: var(--blue); }
+
+        #cmdInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--green);
+            font-family: inherit;
+            font-size: 13.5px;
+            caret-color: var(--green);
+        }
+
+        /* ─── BOTTOM STATUS BAR ──────────────────────────── */
+        .statusbar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 0 4px;
+            flex-shrink: 0;
+        }
+
+        .sb-item {
+            font-size: 11px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sb-item .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .sb-sep { color: var(--border); }
+
+        /* ─── HACK SCREEN ────────────────────────────────── */
+        #hackScreen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            overflow: hidden;
+        }
+
+        .matrix-canvas {
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+        }
+
+        .hack-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .hack-msg {
+            font-size: clamp(18px, 3vw, 28px);
+            font-weight: 700;
+            color: #ff0000;
+            letter-spacing: 3px;
+            margin-bottom: 24px;
+            animation: flicker 0.08s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .hack-sub {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .hack-btn {
+            background: transparent;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            padding: 12px 28px;
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.2s;
+        }
+
+        .hack-btn:hover { background: rgba(255,0,0,0.1); }
+
+        .hack-btn.back {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .hack-btn.back:hover { background: rgba(0,255,157,0.08); }
+
+        /* ─── MINI-GAME ──────────────────────────────────── */
+        #gameContainer {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            height: 220px;
+            display: none;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: var(--bg3);
+            padding: 6px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        #gameArea {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .game-over-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--red);
+            gap: 6px;
+            z-index: 20;
+        }
+
+        .game-over-score { color: var(--green); font-size: 18px; font-weight: 700; }
+
+        #gameArea { outline: none; cursor: crosshair; }
+        .ship {
+            position: absolute;
+            left: 14px;
+            top: 0;
+            font-size: 26px;
+            line-height: 1;
+            transform: rotate(45deg);
+            transform-origin: center;
+            z-index: 5;
+            user-select: none;
+            filter: drop-shadow(0 0 6px rgba(0,255,157,0.5));
+        }
+        .bullet {
+            position: absolute;
+            width: 16px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            z-index: 4;
+        }
+        .enemy {
+            position: absolute;
+            font-size: 22px;
+            line-height: 1;
+            z-index: 5;
+            user-select: none;
+        }
+        .boom {
+            position: absolute;
+            font-size: 22px;
+            line-height: 1;
+            z-index: 6;
+            animation: boomPop 0.3s ease-out forwards;
+        }
+        @keyframes boomPop {
+            from { transform: scale(0.5); opacity: 1; }
+            to   { transform: scale(1.7); opacity: 0; }
+        }
+
+        /* ─── LOADING CURSOR ─────────────────────────────── */
+        .blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════════ BOOT SCREEN ══════════════════ -->
+<div id="bootScreen">
+    <div class="boot-logo">Artem Suslov</div>
+    <div id="bootLines"></div>
+    <div class="boot-bar-wrap" id="bootBarWrap">
+        <div class="boot-bar-fill" id="bootBarFill"></div>
+    </div>
+</div>
+
+<!-- ══════════════════ HACK SCREEN ══════════════════ -->
+<div id="hackScreen">
+    <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
+    <div class="hack-content" id="hackContent">
+        <div class="hack-msg" id="hackMsg">ИНИЦИАЛИЗАЦИЯ...</div>
+        <div class="hack-sub" id="hackSub"></div>
+        <div id="hackButtons"></div>
+    </div>
+</div>
+
+<!-- ══════════════════ WORKSPACE ════════════════════ -->
+<div class="workspace" id="workspace">
+
+    <div class="terminal-window">
+        <div class="win-header">
+            <div class="win-dots">
+                <div class="win-dot dot-r"></div>
+                <div class="win-dot dot-y"></div>
+                <div class="win-dot dot-g"></div>
+            </div>
+            <div class="win-title">artem@portfolio:~</div>
+            <div class="win-status">● online</div>
+        </div>
+
+        <div id="output"></div>
+
+        <div class="input-row">
+            <span class="prompt">
+                <span style="color:var(--green)">artem</span><span class="at">@</span><span class="host">portfolio</span><span style="color:var(--text-dim)">:~$</span>
+            </span>
+            <input type="text" id="cmdInput" autocomplete="off" spellcheck="false" autofocus>
+        </div>
+    </div>
+
+    <!-- Mini game: космо-шутер (hidden by default) -->
+    <div id="gameContainer">
+        <div class="game-header">
+            <span>// invaders.exe</span>
+            <span>⏱ <span id="gameTime">60</span>s &nbsp;|&nbsp; уничтожено: <span id="gameScore">0</span> &nbsp;|&nbsp; ↑/↓ или&nbsp;мышь · SPACE/клик — огонь · Esc — exit</span>
+        </div>
+        <div id="gameArea" tabindex="0">
+            <div class="ship" id="ship">🚀</div>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <div class="sb-item"><div class="dot"></div> Суслов Артём // UX/UI Designer // ИНОСТУДИО</div>
+        <div class="sb-sep">|</div>
+        <div class="sb-item">Figma · UX/UI · I love Design · AI</div>
+        <div class="sb-sep">|</div>
+        <div class="sb-item" id="sbTime"></div>
+    </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  НАСТРОЙКИ — РЕДАКТИРУЙ ТОЛЬКО ЭТОТ БЛОК И PROJECTS НИЖЕ
+// ══════════════════════════════════════════════════════
+const CONFIG = {
+    name:    'Суслов Артём',
+    role:    'UX/UI Designer',
+    company: 'ИНОСТУДИО',
+
+    // Награда за easter egg (команда hack): ссылка на книгу
+    book: {
+        title: 'книгу',          // текст ссылки
+        url:   'https://example.com/book', // ← ВСТАВЬ ссылку на книгу
+    },
+};
+
+
+// ── РАБОТЫ ──────────────────────────────────────────────
+// Две раздельные команды:
+//   PROJECTS — реализованные проекты (команда projects)
+//   CONCEPTS — дизайн-концепты       (команда concepts)
+// Добавить работу = добавить блок { title, desc, url, visual }.
+//  url    — ссылка на кейс или на сам сайт. '' если не нужна.
+//  visual — НЕОБЯЗАТЕЛЬНО: ссылка на скрины / изображения / прототип.
+//           Подойдёт любая ссылка (Я.Диск, Google Drive, Figma, Behance…).
+//           В терминале она спрятана за текстом «ссылка на визуал». '' если нет.
+
+const PROJECTS = [
+    {
+        title: 'СЛПК — корпоративный сайт для привлечения клиентов и партнёров',
+        desc:  'Корпоративный сайт лесопромышленной компании для привлечения новых клиентов и деловых партнёров. Задача — современный, сдержанный и минималистичный стиль, поддерживающий ценности компании, и простая навигация для широкой аудитории (16–60 лет). Роль: UX/UI-дизайн — концепция интерфейса, фирменный стиль на основе элементов логотипа, цветовая палитра, адаптив.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D0%B5%D0%BC?node-id=1-1889&viewport=351%2C276%2C0.09&t=M4EtKo3W1kE3CNGI-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=1%3A1889&page-id=0%3A1',
+        url:   'https://inostudio.com/projects/web/slpk/',
+    },
+    {
+        title: 'Uniskills — цифровая платформа приёмной кампании ЮФУ',
+        desc:  'Личный кабинет абитуриента и менеджера приёмной комиссии Южного федерального университета: «единое окно» для подачи документов онлайн и инструмент для работы с заявлениями. Задача — перевести поступление в онлайн-формат и автоматизировать процессы. Роль: UX/UI-дизайн — исследование, пользовательские сценарии, интерфейсы кабинетов.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D0%B5%D0%BC?node-id=4-1781&viewport=-169%2C222%2C0.21&t=Oe2k2F3G1Rmmfp5L-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=4%3A1781&show-proto-sidebar=1&page-id=0%3A1',
+        url:   'https://inostudio.com/projects/web/uniskills/',
+    },
+    {
+        title: 'Lamoda — Performance Review (личный кабинет)',
+        desc:  'Личный кабинет для сотрудников и руководителей: создание и отслеживание целей сотрудника, дирекции и компании, оценка эффективности. Задача — выстроить прозрачный и понятный процесс performance review. Роль: UX/UI-дизайн — структура, сценарии, интерфейсы для разных ролей.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-5214&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=4%3A5214&show-proto-sidebar=1&page-id=0%3A1',
+        url:   '',
+    },
+    {
+        title: 'Р7-Офис — личный кабинет для партнёров и дистрибьюторов',
+        desc:  'Личный кабинет партнёров и дистрибьюторов Р7-Офис с автоматическим обменом заявками с CRM Битрикс24, гибкими ролями, электронным документооборотом и чатом с менеджером. Задача — убрать ручной перенос заявок и ошибки, ускорить работу и повысить лояльность партнёров. Роль: UX/UI-дизайн — минималистичный флэт-интерфейс, работа с таблицами и формами, подсказки для адаптации.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-8090&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A8090&show-proto-sidebar=1&page-id=0%3A1',
+        url:   'https://inostudio.com/projects/web/r7/',
+    },
+    {
+        title: 'WorkTimer — учёт рабочего времени (внутренний продукт ИНОСТУДИО)',
+        desc:  'Внутренний продукт ИНОСТУДИО для учёта рабочего времени сотрудников и по проектам. Задача — удобно фиксировать, видеть и анализировать затраченное время. Роль: UX/UI-дизайн — сценарии, структура, интерфейсы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-10775&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A10775&show-proto-sidebar=1&page-id=0%3A1',
+        url:   '',
+    },
+    {
+        title: 'HTML5 Cloud Video Editor — онлайн-видеоредактор (SolveigMM)',
+        desc:  'Профессиональный онлайн-видеоредактор для встраивания в LMS и MAM-системы: обрезка и склейка, переходы, текст и графика поверх видео, озвучка, умный рендеринг без потери качества. Задача — дать пользователям редактировать видео прямо в браузере. Роль: UX/UI-дизайн — интерфейс редактора и таймлайна.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-14334&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A14334&show-proto-sidebar=1&page-id=0%3A1',
+        url:   'https://www.solveigmm.com/en/products/html5-cloud-video-editing/',
+    },
+    {
+        title: 'Termex LTA-Utility — приложение для лабораторных термометров',
+        desc:  'Мобильное приложение (iOS/Android), которое принимает данные с лабораторного термометра, строит по ним графики и настраивает параметры записи. Задача — перенести интерфейс прибора LTA-K в мобильный продукт в связке с разработчиками и метрологами. Роль: UX/UI-дизайн — исследование, прототип (более 80 экранов), дизайн Android и iOS, анимация интерфейса.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-21831&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A21831&page-id=0%3A1',
+        url:   'https://standapp.pro/work/termex-app',
+    },
+    {
+        title: 'Rapid Business Cards — цифровые визитки (стартап, США)',
+        desc:  'Приложение для создания и обмена цифровыми визитками и развития сети деловых контактов — продукт стартапа из США. Задача — заменить бумажные визитки и помочь пользователям растить нетворк. Роль: продуктовый дизайн и UX-исследования — экспертный аудит, генерация и отбор идей, дизайн-поддержка.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=10-22805&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=10%3A22775&page-id=0%3A1&show-proto-sidebar=1',
+        url:   'https://standapp.pro/work/rapid-app',
+    },
+    {
+        title: 'ПАО «Т Плюс» — корпоративное приложение для сотрудников',
+        desc:  'Внутреннее мобильное приложение энергетической компании: новости, корпоративный чат, электронный документооборот, профили сотрудников, благодарности, заявки в поддержку, участие в конференциях. Задача — собрать рабочие сервисы сотрудника в одном приложении. Роль: UX/UI-дизайн — сценарии и интерфейсы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-24448&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A24448&page-id=0%3A1&show-proto-sidebar=1',
+        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-pao-t-plyus',
+    },
+    {
+        title: 'Инфоклиника.RU — приложение медицинской системы',
+        desc:  'Мобильное приложение для клиник: пациенты записываются на приём, смотрят список визитов, протоколы приёмов и результаты анализов; врачи видят своё расписание и истории болезни пациентов. Задача — дать удобный доступ к записи и медицинским данным. Роль: UX/UI-дизайн — сценарии и интерфейсы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-24974&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A24974&page-id=0%3A1&show-proto-sidebar=1',
+        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-infoclinica-ru',
+    },
+    {
+        title: 'Курчатовская школа — мобильное приложение для родителей',
+        desc:  'Приложение для родителей: новостная лента, запись в кружки дополнительного образования с формированием договора, достижения и награды детей, ведение профилей детей, вход через телефон или mos.ru. Задача — упростить взаимодействие школы и родителей. Роль: UX/UI-дизайн — сценарии и интерфейсы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-25640&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A25640&page-id=0%3A1&show-proto-sidebar=1',
+        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-gbou-kurchatovskaya-shkola',
+    },
+    {
+        title: 'Курчатовская школа — веб-сервис',
+        desc:  'Веб-версия сервиса школы: запись в дополнительное образование и оформление договора, профили детей, контактная информация, вход через телефон или mos.ru, панель настроек. Задача — перенести ключевые сценарии родителя в веб. Роль: UX/UI-дизайн — структура и интерфейсы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-25854&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A25854&page-id=0%3A1&show-proto-sidebar=1',
+        url:   'https://it-cron.ru/cases/veb-servis-gbou-kurchatovskaya-shkola',
+    },
+    {
+        title: '«Росточки» — мобильное приложение, веб-сайт, разработка логотипа, брендбук',
+        desc:  'Комплексная работа для клиента «Росточки»: мобильное приложение (iOS/Android), веб-сайт, а также разработка логотипа и брендбука. Задача — единый узнаваемый стиль и удобные продукты для пользователей. Роль: UX/UI-дизайн, веб-дизайн и фирменный стиль (логотип, брендбук).',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-14778&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A14778&page-id=0%3A1&show-proto-sidebar=1',
+        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-rostochki',
+    },
+    {
+        title: '«Путь Героя» — интерактивный альбом для «ПАТРИОТ.СПОРТ»',
+        desc:  'Интерактивный веб-альбом о героях Великой Отечественной войны для проекта «ПАТРИОТ.СПОРТ». Задача — придать материалу исторический характер; реализован концепт печатной машинки и свитков. Аудитория — ученики, учителя и администрация школ. Роль: дизайн интерфейса и визуальная концепция.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-14781&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A14781&page-id=0%3A1&show-proto-sidebar=1',
+        url:   'https://it-cron.ru/cases/interaktivnyj-albom-put-geroya-dlya-patriot-sport',
+    },
+    {
+        title: 'ТК «Авангард» — сайт транспортной компании',
+        desc:  'Корпоративный сайт транспортно-логистической компании: услуги грузоперевозок по России, автопарк, расчёт стоимости перевозки, документы и вакансии. Задача — понятный сайт с быстрой заявкой на расчёт. Роль: UX/UI-дизайн — структура, интерфейс, форма заявки.',
+        visual: '',
+        url:   'https://tk-avangard.com/',
+    },
+    {
+        title: 'Реалист+ — сайт поставщика нефтепродуктов',
+        desc:  'Сайт компании по оптовой продаже и доставке нефтепродуктов: о компании, продукция, доставка по регионам, контакты, индексы цен. Задача — представить компанию и упростить обращение клиентов. Роль: UX/UI-дизайн — структура и интерфейс.',
+        visual: '',
+        url:   'https://realistplus.ru/',
+    },
+];
+
+const CONCEPTS = [
+    {
+        title: 'РТК-ЦОД — интерактивная карта «Атлас профессий»',
+        desc:  'Интерактивная карта-атлас профессий для РТК-ЦОД. Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-15505&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=13%3A15505&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'КТК «Талантливым детям» — редизайн сайта',
+        desc:  'Редизайн сайта программы «Талантливым детям» (КТК). Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-15783&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A15783&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'ЦЕМРОС (БЛОК) — редизайн сайта',
+        desc:  'Редизайн корпоративного сайта ЦЕМРОС (БЛОК). Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-16269&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A16269&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'Росконцерт — редизайн сайта',
+        desc:  'Редизайн сайта «Росконцерт». Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-16766&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A16766&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'SLK Cement — редизайн сайта',
+        desc:  'Редизайн сайта SLK Cement. Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-16968&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A16968&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'Нефтехимия — редизайн сайта',
+        desc:  'Редизайн корпоративного сайта (нефтехимия). Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-17324&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A17324&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'Норникель — карьерный сайт',
+        desc:  'Дизайн карьерного сайта «Норникель». Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-17889&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A17889&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'СЛПК — онлайн-магазин',
+        desc:  'Онлайн-магазин для СЛПК. Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-18332&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A18332&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+    {
+        title: 'X5 Tech — карьерный сайт',
+        desc:  'Дизайн карьерного сайта X5 Tech. Концепт главной страницы.',
+        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-18581&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A18581&show-proto-sidebar=1&page-id=13%3A15499',
+    },
+];
+
+// ══════════════════════════════════════════════════════
+//  BOOT SEQUENCE
+// ══════════════════════════════════════════════════════
+const bootMessages = [
+    { text: '> Initializing portfolio system...', cls: 'dim', delay: 0 },
+    { text: '> Loading modules: [ux] [ui] [design] [code]', cls: 'dim', delay: 350 },
+    { text: '> Design system: LOADED', cls: 'green', delay: 700 },
+    { text: '> Figma connect......... ✓', cls: 'green', delay: 1000 },
+    { text: '> Webflow connect....... ✓', cls: 'green', delay: 1200 },
+    { text: '> Portfolio loaded...... ✓', cls: 'green', delay: 1500 },
+    { text: '> Welcome, visitor.', cls: 'yellow', delay: 1900 },
+];
+
+function runBoot() {
+    const container = document.getElementById('bootLines');
+    const barWrap   = document.getElementById('bootBarWrap');
+    const barFill   = document.getElementById('bootBarFill');
+
+    barWrap.style.opacity = '1';
+
+    bootMessages.forEach((msg, i) => {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = `boot-line ${msg.cls}`;
+            el.textContent = msg.text;
+            container.appendChild(el);
+            barFill.style.width = ((i + 1) / bootMessages.length * 100) + '%';
+        }, msg.delay);
+    });
+
+    setTimeout(() => {
+        document.getElementById('bootScreen').style.transition = 'opacity 0.5s';
+        document.getElementById('bootScreen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('bootScreen').style.display = 'none';
+            const ws = document.getElementById('workspace');
+            ws.classList.add('visible');
+            terminal.showWelcome();
+            document.getElementById('cmdInput').focus();
+        }, 500);
+    }, 2600);
+}
+
+// ══════════════════════════════════════════════════════
+//  TIME IN STATUS BAR
+// ══════════════════════════════════════════════════════
+function updateTime() {
+    const el = document.getElementById('sbTime');
+    if (el) el.textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// ══════════════════════════════════════════════════════
+//  TERMINAL CLASS
+// ══════════════════════════════════════════════════════
+class Terminal {
+    constructor() {
+        this.out = document.getElementById('output');
+        this.inp = document.getElementById('cmdInput');
+        this.history = [];
+        this.histIdx = -1;
+        this.gameRunning = false;
+        this.gameScore = 0;
+        this.bullets = [];
+        this.enemies = [];
+
+        this.commands = {
+            'about':     () => this.showAbout(),
+            'skills':    () => this.showSkills(),
+            'projects':  () => this.showProjects(),
+            'concepts':  () => this.showConcepts(),
+            'game':      () => this.openGame(),
+            'start':     () => this.startGamePlay(),
+            'exit':      () => this.exitGame(),
+            'hack':      () => this.startHack(),
+            'clear':     () => this.clearTerm(),
+        };
+
+        this.inp.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const val = this.inp.value.trim();
+                this.inp.value = '';
+                if (!val) return;
+                this.history.unshift(val);
+                this.histIdx = -1;
+                this.exec(val);
+            }
+            if (e.key === 'ArrowUp') {
+                this.histIdx = Math.min(this.histIdx + 1, this.history.length - 1);
+                this.inp.value = this.history[this.histIdx] || '';
+            }
+            if (e.key === 'ArrowDown') {
+                this.histIdx = Math.max(this.histIdx - 1, -1);
+                this.inp.value = this.histIdx >= 0 ? this.history[this.histIdx] : '';
+            }
+        });
+
+        this.keys = {};
+        document.addEventListener('keydown', e => {
+            if (!this.gameRunning) return;
+            if (document.activeElement === this.inp) return; // печатает команду — не мешаем
+            if (['ArrowUp','ArrowDown','Space'].includes(e.code)) {
+                e.preventDefault();
+                this.keys[e.code] = true;
+                if (e.code === 'Space') this._fire();
+            }
+            if (e.code === 'Escape') this.exitGame();
+        });
+        document.addEventListener('keyup', e => {
+            this.keys[e.code] = false;
+        });
+    }
+
+    line(text, cls = '') {
+        const el = document.createElement('div');
+        el.className = `line ${cls}`;
+        el.innerHTML = text;
+        this.out.appendChild(el);
+        this.out.scrollTop = this.out.scrollHeight;
+        return el;
+    }
+
+    blank() { this.line('&nbsp;'); }
+
+    exec(cmd) {
+        this.line(`<span style="color:var(--green)">artem</span><span style="color:var(--text-dim)">@portfolio:~$</span> ${this.esc(cmd)}`, 'user');
+        const [name, ...args] = cmd.trim().split(/\s+/);
+        const fn = this.commands[name.toLowerCase()];
+        if (fn) fn(args.join(' '));
+        else {
+            this.line(`command not found: <span style="color:var(--red)">${this.esc(cmd)}</span> — команды показаны выше (или&nbsp;набери <span style="color:var(--yellow)">clear</span>)`, 'error');
+        }
+    }
+
+    esc(s) {
+        return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
+    // Экранирование + типографика: приклеивает короткие предлоги/союзы
+    // и числа к следующему слову неразрывным пробелом (нет висячих предлогов).
+    typo(s) {
+        let t = this.esc(String(s));
+        const short = 'а|и|в|во|о|об|обо|у|к|ко|с|со|я|на|по|до|от|за|из|изо|не|ни|но|то|же|что|как|или|для';
+        const re = new RegExp('(^|[\\s(«"])(' + short + ')\\s+', 'giu');
+        for (let n = 0; n < 3; n++) t = t.replace(re, (m, p, w) => p + w + '\u00A0');
+        t = t.replace(/(\d)\s+(?=[А-Яа-яЁё])/g, '$1\u00A0'); // число + слово
+        return t;
+    }
+
+    showWelcome() {
+        this.line('<span class="smiley-logo">(*^‿^*)</span>', '');
+        this.blank();
+        this.line('Суслов Артём // UX/UI Designer // ИНОСТУДИО', 'header');
+        this.blank();
+        this.line('В&nbsp;компании проектирую цифровые системы для&nbsp;управления бизнес-процессами и&nbsp;взаимодействия с&nbsp;людьми.', 'dim');
+        this.blank();
+        this.line('┌─ ДОСТУПНЫЕ КОМАНДЫ ──────────────────────────────┐', 'info');
+        this.line('│', 'info');
+        this.line('│  <span style="color:var(--green)">about</span>     — немного обо&nbsp;мне и&nbsp;о&nbsp;работе в&nbsp;ИНОСТУДИО', 'info');
+        this.line('│  <span style="color:var(--green)">skills</span>    — инструменты и&nbsp;навыки', 'info');
+        this.line('│  <span style="color:var(--green)">projects</span>  — реализованные проекты', 'info');
+        this.line('│  <span style="color:var(--green)">concepts</span>  — дизайн-концепты', 'info');
+        this.line('│', 'info');
+        this.line('│  <span style="color:var(--yellow)">game</span>      — мини-игра (космо-шутер)', 'info');
+        this.line('│  <span style="color:var(--yellow)">hack</span>      — попробуйте...👀', 'info');
+        this.line('│  <span style="color:var(--yellow)">clear</span>     — очистить терминал', 'info');
+        this.line('│', 'info');
+        this.line('└──────────────────────────────────────────────────┘', 'info');
+        this.blank();
+    }
+
+
+    showAbout() {
+        this.blank();
+        this.line('── ABOUT ──────────────────────────────────────────', 'header');
+        this.blank();
+        this.line('Здравствуйте! Меня зовут Артём, я&nbsp;более 13&nbsp;лет работаю в&nbsp;сфере дизайна. Можно сказать, что&nbsp;я&nbsp;занимаюсь этим всю свою жизнь.');
+        this.blank();
+        this.line('Я&nbsp;окончил художественную школу, а&nbsp;затем получил образование в&nbsp;Московском инженерно-физическом институте по&nbsp;специальности «Дизайн».');
+        this.blank();
+        this.line('В&nbsp;Иностудио работаю больше 4&nbsp;лет.');
+        this.line('Проектирую цифровые системы:');
+        this.line('  → Партнёрские порталы', 'dim');
+        this.line('  → Карьерные порталы', 'dim');
+        this.line('  → Корпоративные B2B-порталы', 'dim');
+        this.line('  → Клиентские ЛК для&nbsp;B2C', 'dim');
+        this.line('  → Личные кабинеты сотрудников', 'dim');
+        this.line('  → Дашборды', 'dim');
+        this.blank();
+        this.line('Веду задачу от&nbsp;исследования и&nbsp;прототипа до&nbsp;готового решения.');
+        this.line('Работаю в&nbsp;связке с&nbsp;разработчиками.');
+        this.line('Использую AI в&nbsp;рабочем процессе.');
+        this.blank();
+        this.line('Работы → команды <span style="color:var(--yellow)">projects</span> и&nbsp;<span style="color:var(--yellow)">concepts</span>', 'dim');
+        this.blank();
+    }
+
+    showSkills() {
+        this.blank();
+        this.line('── SKILLS ─────────────────────────────────────────', 'header');
+        this.blank();
+        this.line('DESIGN', 'yellow');
+        this.line('  Figma · Photoshop · Illustrator · Animate · Hype Tumult', 'success');
+        this.blank();
+        this.line('NO-CODE / LOW-CODE', 'yellow');
+        this.line('  Webflow · Tilda · TapTop · Figma Sites', 'success');
+        this.blank();
+        this.line('AI TOOLS', 'yellow');
+        this.line('  Vibe coding · AI UI generation · Prompt-driven prototyping', 'success');
+        this.blank();
+        this.line('DEVELOPMENT UNDERSTANDING', 'yellow');
+        this.line('  HTML/CSS basics · Responsive · Design tokens · Handoff', 'success');
+        this.blank();
+        this.line('SPECIALIZATION', 'yellow');
+        this.line('  B2B & B2C product design · UX research · Design systems', 'success');
+        this.blank();
+    }
+
+    showProjects() {
+        this._renderWorks(PROJECTS, 'PROJECTS', 'реализованные проекты');
+    }
+
+    showConcepts() {
+        this._renderWorks(CONCEPTS, 'CONCEPTS', 'дизайн-концепты');
+    }
+
+    _renderWorks(list, head, sub) {
+        this.blank();
+        this.line(`── ${head} ${'─'.repeat(Math.max(0, 49 - head.length))}`, 'header');
+        this.line(sub, 'dim');
+        this.blank();
+
+        const real = (list || []).filter(p => p && p.title);
+        if (!real.length) {
+            this.line('// работы пока не&nbsp;добавлены', 'dim');
+            this.blank();
+            return;
+        }
+
+        real.forEach((p, i) => {
+            const n = String(i + 1).padStart(2, '0');
+            this.line(`<span class="proj-title">${n}. ${this.typo(p.title)}</span>`, 'proj');
+            if (p.desc) this.line(`<span class="proj-desc">${this.typo(p.desc)}</span>`);
+            if (p.url) {
+                const label = p.url.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+                this.line(`<span class="proj-link">↗ <a href="${p.url}" target="_blank" rel="noopener">${this.esc(label)}</a></span>`);
+            }
+            if (p.visual) {
+                this.line(`<span class="proj-link">🔗 <a href="${p.visual}" target="_blank" rel="noopener">ссылка на&nbsp;визуал</a></span>`);
+            }
+            this.blank();
+        });
+    }
+
+
+    // ── GAME: космо-шутер ────────────────────────────────────
+    openGame() {
+        const gc = document.getElementById('gameContainer');
+        gc.style.display = 'flex';
+        this.blank();
+        this.line('// invaders.exe — загружен', 'success');
+        this.line('Цель: за&nbsp;60&nbsp;секунд сбить как&nbsp;можно больше 🐛 багов, 🤖 ботов, 🦠 вирусов.', 'dim');
+        this.line('Управление: <span style="color:var(--yellow)">↑/↓</span> или&nbsp;мышь — движение · <span style="color:var(--yellow)">SPACE</span>/клик — огонь.', 'dim');
+        this.line('Команда <span style="color:var(--yellow)">start</span> — начать. <span style="color:var(--yellow)">exit</span> или&nbsp;Esc — закрыть.', 'dim');
+        this.blank();
+    }
+
+    startGamePlay() {
+        const gc = document.getElementById('gameContainer');
+        if (gc.style.display === 'none' || gc.style.display === '') this.openGame();
+
+        const area = document.getElementById('gameArea');
+        area.querySelectorAll('.bullet, .enemy, .boom, .game-over-overlay').forEach(el => el.remove());
+
+        this.gameScore = 0;
+        this.bullets = [];
+        this.enemies = [];
+        this.lastShot = 0;
+        this.spawnTimer = 0;
+        this.spawnEvery = 850;
+        document.getElementById('gameScore').textContent = '0';
+        document.getElementById('gameTime').textContent = '60';
+
+        const ship = document.getElementById('ship');
+        this.shipH = ship.offsetHeight || 26;
+        this.shipY = (area.offsetHeight - this.shipH) / 2;
+        ship.style.top = this.shipY + 'px';
+
+        // указатель/мышь — привязываем один раз
+        if (!this._pointerBound) {
+            area.addEventListener('pointermove', e => {
+                if (!this.gameRunning) return;
+                const r = area.getBoundingClientRect();
+                this.shipY = Math.max(0, Math.min(r.height - this.shipH, e.clientY - r.top - this.shipH / 2));
+            });
+            area.addEventListener('pointerdown', () => { if (this.gameRunning) this._fire(); });
+            this._pointerBound = true;
+        }
+
+        this.gameRunning = true;
+        if (area.focus) area.focus();
+        this._lastFrame = performance.now();
+        this._gameStart = performance.now();
+        cancelAnimationFrame(this._raf);
+        this._loop();
+    }
+
+    _loop() {
+        if (!this.gameRunning) return;
+        const now = performance.now();
+        const dt = Math.min(50, now - this._lastFrame) / 1000; // сек (с защитой от лагов)
+        this._lastFrame = now;
+
+        const area = document.getElementById('gameArea');
+        const W = area.offsetWidth, H = area.offsetHeight;
+        const ship = document.getElementById('ship');
+
+        // таймер
+        const timeLeft = Math.max(0, 60 - (now - this._gameStart) / 1000);
+        document.getElementById('gameTime').textContent = Math.ceil(timeLeft);
+        if (timeLeft <= 0) { this._gameOver(); return; }
+
+        // движение корабля клавишами
+        const sp = 230 * dt;
+        if (this.keys['ArrowUp'])   this.shipY -= sp;
+        if (this.keys['ArrowDown']) this.shipY += sp;
+        this.shipY = Math.max(0, Math.min(H - this.shipH, this.shipY));
+        ship.style.top = this.shipY + 'px';
+
+        // спавн врагов (чуть учащается к концу)
+        this.spawnTimer += dt * 1000;
+        const interval = Math.max(420, this.spawnEvery - (60 - timeLeft) * 6);
+        if (this.spawnTimer >= interval) {
+            this.spawnTimer = 0;
+            this._spawnEnemy(W, H);
+        }
+
+        // пули вправо
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const b = this.bullets[i];
+            b.x += 480 * dt;
+            if (b.x > W + 20) { b.el.remove(); this.bullets.splice(i, 1); continue; }
+            b.el.style.left = b.x + 'px';
+        }
+
+        // враги влево + попадания
+        for (let i = this.enemies.length - 1; i >= 0; i--) {
+            const en = this.enemies[i];
+            en.x -= en.v * dt;
+            if (en.x < -40) { en.el.remove(); this.enemies.splice(i, 1); continue; }
+            en.el.style.left = en.x + 'px';
+
+            for (let j = this.bullets.length - 1; j >= 0; j--) {
+                const b = this.bullets[j];
+                if (b.x + 16 > en.x && b.x < en.x + 24 && b.y + 4 > en.y && b.y < en.y + 24) {
+                    this._boom(en.x, en.y);
+                    en.el.remove(); this.enemies.splice(i, 1);
+                    b.el.remove(); this.bullets.splice(j, 1);
+                    this.gameScore++;
+                    document.getElementById('gameScore').textContent = this.gameScore;
+                    break;
+                }
+            }
+        }
+
+        this._raf = requestAnimationFrame(() => this._loop());
+    }
+
+    _fire() {
+        if (!this.gameRunning) return;
+        const now = performance.now();
+        if (now - this.lastShot < 170) return; // скорострельность
+        this.lastShot = now;
+        const area = document.getElementById('gameArea');
+        const x = 44, y = this.shipY + this.shipH / 2 - 2;
+        const el = document.createElement('div');
+        el.className = 'bullet';
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        area.appendChild(el);
+        this.bullets.push({ el, x, y });
+    }
+
+    _spawnEnemy(W, H) {
+        const area = document.getElementById('gameArea');
+        const types = ['🐛', '🤖', '🦠'];
+        const el = document.createElement('div');
+        el.className = 'enemy';
+        el.textContent = types[Math.floor(Math.random() * types.length)];
+        const y = Math.random() * (H - 28);
+        const x = W + 10;
+        const v = 70 + Math.random() * 95; // px/сек
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        area.appendChild(el);
+        this.enemies.push({ el, x, y, v });
+    }
+
+    _boom(x, y) {
+        const area = document.getElementById('gameArea');
+        const el = document.createElement('div');
+        el.className = 'boom';
+        el.textContent = '💥';
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        area.appendChild(el);
+        setTimeout(() => el.remove(), 300);
+    }
+
+    _gameOver() {
+        this.gameRunning = false;
+        cancelAnimationFrame(this._raf);
+        const area = document.getElementById('gameArea');
+        area.querySelectorAll('.bullet, .enemy').forEach(el => el.remove());
+        this.bullets = []; this.enemies = [];
+        const div = document.createElement('div');
+        div.className = 'game-over-overlay';
+        div.innerHTML = `ВРЕМЯ ВЫШЛО<div class="game-over-score">${this.gameScore} уничтожено</div><span style="color:var(--text-dim);font-size:11px">команда "start" — сыграть ещё</span>`;
+        area.appendChild(div);
+    }
+
+    exitGame() {
+        this.gameRunning = false;
+        cancelAnimationFrame(this._raf);
+        const area = document.getElementById('gameArea');
+        if (area) area.querySelectorAll('.bullet, .enemy, .boom, .game-over-overlay').forEach(el => el.remove());
+        document.getElementById('gameContainer').style.display = 'none';
+        this.blank();
+        this.line('// invaders.exe — закрыт', 'dim');
+        this.blank();
+    }
+
+    // ── HACK ─────────────────────────────────────────────────
+    startHack() {
+        this.blank();
+        this.line('INITIATING PROTOCOL...', 'error');
+        const msgs = [
+            { t: 'СКАНИРОВАНИЕ СИСТЕМЫ... 25%', d: 800 },
+            { t: 'УЯЗВИМОСТЬ ОБНАРУЖЕНА... 50%', d: 1600 },
+            { t: 'ОБХОД ЗАЩИТЫ... 75%', d: 2400 },
+            { t: 'ДОСТУП ПОЛУЧЕН... 100%', d: 3200 },
+        ];
+        msgs.forEach(m => setTimeout(() => this.line(m.t, 'error'), m.d));
+        setTimeout(() => this._showHack(), 4000);
+    }
+
+    _showHack() {
+        const hs = document.getElementById('hackScreen');
+        hs.style.display = 'flex';
+        this._startMatrix();
+        const hackMsg = document.getElementById('hackMsg');
+        const hackSub = document.getElementById('hackSub');
+        const hackBtns = document.getElementById('hackButtons');
+
+        const msgs = ['СИСТЕМА СКОМПРОМЕТИРОВАНА', 'ДАННЫЕ ОТКРЫТЫ'];
+        let i = 0;
+        const iv = setInterval(() => {
+            if (i < msgs.length) hackMsg.textContent = msgs[i++];
+            else {
+                clearInterval(iv);
+                const book = (CONFIG.book && CONFIG.book.url)
+                    ? `<a href="${CONFIG.book.url}" target="_blank" rel="noopener" style="color:var(--green)">${this.esc(CONFIG.book.title || 'книгу')}</a>`
+                    : (this.esc(CONFIG.book && CONFIG.book.title || 'книгу'));
+                hackMsg.textContent = 'Система взломана. Поздравляю :)';
+                hackSub.innerHTML =
+                    `Ваше любопытство будет вознаграждено :) Держите ссылку на&nbsp;${book}.<br><br>` +
+                    'Ведь любопытство — ключевое качество для&nbsp;дизайнера, которое играет важную роль в&nbsp;профессиональном росте, качестве работы и&nbsp;способности адаптироваться к&nbsp;изменениям.';
+                hackBtns.innerHTML = `
+                    <button class="hack-btn back" onclick="terminal._closeHack()">ВЕРНУТЬСЯ</button>
+                `;
+            }
+        }, 700);
+    }
+
+    _closeHack() {
+        const hackMsg  = document.getElementById('hackMsg');
+        const hackSub  = document.getElementById('hackSub');
+        const hackBtns = document.getElementById('hackButtons');
+
+        hackBtns.innerHTML = '';
+        hackMsg.style.color = 'var(--green)';
+        hackMsg.textContent = 'ПРОИЗВОДИМ ОЧИЩЕНИЕ СИСТЕМЫ';
+        hackSub.innerHTML =
+            '<div id="cleanseLog" style="font-size:12px;color:rgba(0,255,157,0.6);line-height:1.9;min-height:60px"></div>' +
+            '<div class="cleanse-bar"><div class="cleanse-fill" id="cleanseFill"></div></div>';
+
+        const fill = document.getElementById('cleanseFill');
+        const log  = document.getElementById('cleanseLog');
+        const steps = ['Удаление следов вторжения… ok', 'Проверка целостности… ok', 'Сброс терминала… ok'];
+        let pct = 0, si = 0;
+
+        const iv = setInterval(() => {
+            pct += 4;
+            if (fill) fill.style.width = Math.min(100, pct) + '%';
+            if (log && si < steps.length && pct >= (si + 1) * 28) {
+                log.innerHTML += steps[si] + '<br>';
+                si++;
+            }
+            if (pct >= 100) {
+                clearInterval(iv);
+                setTimeout(() => {
+                    document.getElementById('hackScreen').style.display = 'none';
+                    this._stopMatrix();
+                    hackMsg.style.color = '';
+                    hackMsg.textContent = 'ИНИЦИАЛИЗАЦИЯ...';
+                    hackSub.textContent = '';
+                    hackBtns.innerHTML = '';
+                    this.clearTerm(); // авто-очистка терминала
+                }, 500);
+            }
+        }, 60);
+    }
+
+    _startMatrix() {
+        const canvas = document.getElementById('matrixCanvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+        const cols = Math.floor(canvas.width / 16);
+        const drops = Array(cols).fill(1);
+        this._matrixInterval = setInterval(() => {
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff9d';
+            ctx.font = '14px JetBrains Mono';
+            drops.forEach((y, i) => {
+                const ch = String.fromCharCode(0x30A0 + Math.random() * 96);
+                ctx.fillText(ch, i * 16, y * 16);
+                if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }, 40);
+    }
+
+    _stopMatrix() {
+        clearInterval(this._matrixInterval);
+    }
+
+    clearTerm() {
+        this.out.innerHTML = '';
+        this.showWelcome();
+    }
+}
+
+// ══════════════════════════════════════════════════════
+const terminal = new Terminal();
+document.addEventListener('DOMContentLoaded', runBoot);
+
+/* ══════════════════════════════════════════════════════
+   ПАМЯТКА (можно удалить)
+
+   ПОЛЕ visual В ПРОЕКТАХ/КОНЦЕПТАХ — необязательная ссылка на
+   визуал: скрины, изображения или прототип. Подойдёт ЛЮБАЯ ссылка
+   (Я.Диск, Google Drive, Figma, Behance, imgbb и т.п.) — открывать
+   прямую ссылку на файл не нужно, это просто гиперссылка.
+   В терминале она показывается как «ссылка на визуал» и открывается
+   в новой вкладке. Если visual: '' — строка не выводится.
+   ══════════════════════════════════════════════════════ */
+</script>
+</body>
+</html>
