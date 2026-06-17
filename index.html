@@ -246,6 +246,106 @@
         .proj-desc  { color: var(--text); font-size: 13px; line-height: 1.55; margin-top: 2px; }
         .proj-link  { color: var(--blue); font-size: 12px; }
 
+        /* ─── МЕНЮ КОМАНД (с кнопками) ────────────────────── */
+        .cmd-menu {
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--green);
+            border-radius: 6px;
+            padding: 12px 14px 8px;
+            margin: 4px 0 6px;
+            max-width: 660px;
+            background: rgba(0,255,157,0.02);
+        }
+        .cmd-menu-title {
+            color: var(--blue);
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+        .cmd-menu-hint {
+            color: var(--text-dim);
+            font-size: 11px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .cmd-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            padding: 6px 0;
+            border-top: 1px dashed rgba(42,42,53,0.7);
+        }
+        .cmd-row:first-of-type { border-top: none; }
+        .cmd-name {
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            min-width: 74px;
+        }
+        .cmd-name.green  { color: var(--green); }
+        .cmd-name.yellow { color: var(--yellow); }
+        .cmd-desc {
+            color: var(--text-dim);
+            font-size: 12.5px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* кнопка «Выполнить команду» */
+        .run-cmd-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
+            padding: 3px 11px;
+            font-family: inherit;
+            font-size: 11px;
+            white-space: nowrap;
+            color: var(--green);
+            background: rgba(0,255,157,0.06);
+            border: 1px solid var(--green-dark);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .run-cmd-btn:hover {
+            background: rgba(0,255,157,0.16);
+            border-color: var(--green);
+            box-shadow: 0 0 10px rgba(0,255,157,0.3);
+        }
+        .run-cmd-btn:active { transform: translateY(1px); }
+        .run-cmd-btn.inline { margin-left: 4px; }
+
+        /* кнопка «Смотреть проекты» — тот же стиль, что и «Выполнить команду», но крупнее.
+           Селектор .line a.view-projects-btn перебивает глобальное .line a (синий + подчёркивание). */
+        .line a.view-projects-btn,
+        .view-projects-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin: 8px 0 4px;
+            padding: 12px 24px;
+            font-family: inherit;
+            font-size: 16px;
+            white-space: nowrap;
+            color: var(--green);
+            background: rgba(0,255,157,0.06);
+            border: 1px solid var(--green-dark);
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .line a.view-projects-btn:hover,
+        .view-projects-btn:hover {
+            color: var(--green);
+            background: rgba(0,255,157,0.16);
+            border-color: var(--green);
+            box-shadow: 0 0 10px rgba(0,255,157,0.3);
+        }
+        .view-projects-btn:active { transform: translateY(1px); }
+
         /* очищение после hack */
         .cleanse-bar {
             width: 280px; height: 3px; margin: 18px auto 0;
@@ -413,6 +513,8 @@
             font-size: 11px;
             color: var(--text-dim);
         }
+        #gameTime  { font-weight: 700; color: var(--green); }
+        #gameScore { font-weight: 700; color: var(--red); }
 
         #gameArea {
             position: relative;
@@ -537,7 +639,7 @@
     <div id="gameContainer">
         <div class="game-header">
             <span>// invaders.exe</span>
-            <span>⏱ <span id="gameTime">60</span>s &nbsp;|&nbsp; уничтожено: <span id="gameScore">0</span> &nbsp;|&nbsp; ↑/↓ или&nbsp;мышь · SPACE/клик — огонь · Esc — exit</span>
+            <span>⏱ <span id="gameTime">60</span>s &nbsp;|&nbsp; уничтожено: <span id="gameScore">0</span> &nbsp;|&nbsp; ↑/↓ или&nbsp;мышь · SPACE/клик — огонь</span>
         </div>
         <div id="gameArea" tabindex="0">
             <div class="ship" id="ship">🚀</div>
@@ -562,6 +664,10 @@ const CONFIG = {
     role:    'UX/UI Designer',
     company: 'ИНОСТУДИО',
 
+    // Общая ссылка на прототип в Figma (кнопка «Смотреть проекты»
+    // в конце списков projects и concepts)
+    figma: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=42-14045&p=f&viewport=-176%2C214%2C0.04&t=pnRPluLC3a6OqV6m-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=42%3A14045&page-id=42%3A13764',
+
     // Награда за easter egg (команда hack): ссылка на книгу
     book: {
         title: 'книгу',          // текст ссылки
@@ -574,158 +680,130 @@ const CONFIG = {
 // Две раздельные команды:
 //   PROJECTS — реализованные проекты (команда projects)
 //   CONCEPTS — дизайн-концепты       (команда concepts)
-// Добавить работу = добавить блок { title, desc, url, visual }.
-//  url    — ссылка на кейс или на сам сайт. '' если не нужна.
-//  visual — НЕОБЯЗАТЕЛЬНО: ссылка на скрины / изображения / прототип.
-//           Подойдёт любая ссылка (Я.Диск, Google Drive, Figma, Behance…).
-//           В терминале она спрятана за текстом «ссылка на визуал». '' если нет.
+// Добавить работу = добавить блок { title, desc }.
+//  title — название работы.
+//  desc  — описание (тайтл + описание).
+// Ссылки на отдельные кейсы убраны. В конце обоих списков —
+// общая кнопка «Смотреть проекты» (ссылка задаётся в CONFIG.figma).
 
 const PROJECTS = [
     {
-        title: 'СЛПК — корпоративный сайт для привлечения клиентов и партнёров',
-        desc:  'Корпоративный сайт лесопромышленной компании для привлечения новых клиентов и деловых партнёров. Задача — современный, сдержанный и минималистичный стиль, поддерживающий ценности компании, и простая навигация для широкой аудитории (16–60 лет). Роль: UX/UI-дизайн — концепция интерфейса, фирменный стиль на основе элементов логотипа, цветовая палитра, адаптив.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D0%B5%D0%BC?node-id=1-1889&viewport=351%2C276%2C0.09&t=M4EtKo3W1kE3CNGI-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=1%3A1889&page-id=0%3A1',
-        url:   'https://inostudio.com/projects/web/slpk/',
+        title: 'СЛПК — Корпоративный портал',
+        desc:  'Корпоративный портал лесопромышленной компании — для клиентов, деловых партнёров и будущих сотрудников. Сдержанный современный стиль поддерживает ценности компании, а навигация рассчитана на широкую аудиторию (16–60 лет). Задача: привлечь новых клиентов и партнёров, представив компанию через понятный и солидный сайт. Роль: UX/UI-дизайн — концепция интерфейса, фирменный стиль на основе элементов логотипа, цветовая палитра, адаптив. Награды: три первых места в «Рейтинге Рунета» (разработка сайтов и комплексная разработка, целлюлозно-бумажная промышленность).',
     },
     {
-        title: 'Uniskills — цифровая платформа приёмной кампании ЮФУ',
-        desc:  'Личный кабинет абитуриента и менеджера приёмной комиссии Южного федерального университета: «единое окно» для подачи документов онлайн и инструмент для работы с заявлениями. Задача — перевести поступление в онлайн-формат и автоматизировать процессы. Роль: UX/UI-дизайн — исследование, пользовательские сценарии, интерфейсы кабинетов.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D0%B5%D0%BC?node-id=4-1781&viewport=-169%2C222%2C0.21&t=Oe2k2F3G1Rmmfp5L-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=4%3A1781&show-proto-sidebar=1&page-id=0%3A1',
-        url:   'https://inostudio.com/projects/web/uniskills/',
+        title: 'СИБУР — WEB-игра',
+        desc:  'Интерактивная профориентационная веб-игра (сайт) для школьников 9 и 11 классов и студентов. Через тест, виртуальную примерку «формы» СИБУРа и «один день на производстве» игрок узнаёт, какая профессия в нефтехимии ему подходит. Задача: вовлечь пользователя и довести его до конца игры — за счёт игровой механики, иллюстрированных персонажей и анимации. Роль: UX/UI-дизайн — исследование, прототип (50+ экранов), адаптивный дизайн, анимация интерфейса и иллюстрации персонажей.',
     },
     {
-        title: 'Lamoda — Performance Review (личный кабинет)',
-        desc:  'Личный кабинет для сотрудников и руководителей: создание и отслеживание целей сотрудника, дирекции и компании, оценка эффективности. Задача — выстроить прозрачный и понятный процесс performance review. Роль: UX/UI-дизайн — структура, сценарии, интерфейсы для разных ролей.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-5214&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=4%3A5214&show-proto-sidebar=1&page-id=0%3A1',
-        url:   '',
+        title: 'UNISKILLS — Цифровая платформа приёмной кампании ЮФУ',
+        desc:  'Платформа для приёмных кампаний Южного федерального университета. Личный кабинет абитуриента и менеджера приёмной комиссии — «единое окно» для подачи документов онлайн и работы с заявлениями, вступительными испытаниями и конкурсными списками. Задача: перевести поступление в онлайн-формат и автоматизировать процессы приёмной комиссии. Роль: UX/UI-дизайн — исследование, пользовательские сценарии, интерфейсы кабинетов. Награды: II место Workspace Digital Awards 2023, категория «Цифровизация и трансформация».',
     },
     {
-        title: 'Р7-Офис — личный кабинет для партнёров и дистрибьюторов',
-        desc:  'Личный кабинет партнёров и дистрибьюторов Р7-Офис с автоматическим обменом заявками с CRM Битрикс24, гибкими ролями, электронным документооборотом и чатом с менеджером. Задача — убрать ручной перенос заявок и ошибки, ускорить работу и повысить лояльность партнёров. Роль: UX/UI-дизайн — минималистичный флэт-интерфейс, работа с таблицами и формами, подсказки для адаптации.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-8090&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A8090&show-proto-sidebar=1&page-id=0%3A1',
-        url:   'https://inostudio.com/projects/web/r7/',
+        title: 'Lamoda — Система оценки и развития сотрудников',
+        desc:  'Внутренняя система выявления, оценки и развития высокопотенциальных сотрудников Lamoda. Личный кабинет для сотрудников и руководителей: постановка и отслеживание целей (сотрудника, дирекции, компании), ревью и оценка эффективности. Задачи: калибровка талантов среди руководителей и ключевых экспертов; ассессмент-центр для трёх уровней — эксперты, линейные управленцы, руководители направлений; программа наставничества с топ-менеджментом; Succession Review с CHRO и CEO Lamoda. Роль: UX/UI-дизайн — структура, сценарии и интерфейсы под разные роли.',
     },
     {
-        title: 'WorkTimer — учёт рабочего времени (внутренний продукт ИНОСТУДИО)',
-        desc:  'Внутренний продукт ИНОСТУДИО для учёта рабочего времени сотрудников и по проектам. Задача — удобно фиксировать, видеть и анализировать затраченное время. Роль: UX/UI-дизайн — сценарии, структура, интерфейсы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-10775&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A10775&show-proto-sidebar=1&page-id=0%3A1',
-        url:   '',
+        title: 'Р7-Офис — Личный кабинет для партнёров и дистрибьюторов',
+        desc:  'Личный кабинет, в котором заявки партнёров автоматически попадают в CRM Битрикс24. Решение избавило процесс от ручных ошибок, освободило время сотрудников и сделало работу партнёров удобнее — а вместе с этим выросла их лояльность. Задачи: автоматический обмен данными с CRM Битрикс24; гибкие роли для дистрибьюторов и партнёров; электронная подпись и автоматизированный документооборот; чат с менеджером Р7-Офис и раздел FAQ; уведомления о корпоративных событиях, обновлениях, продлении лицензий и изменениях по сделкам. Роль: UX/UI-дизайн — минималистичный флэт-интерфейс, работа с таблицами и формами, подсказки для адаптации пользователей.',
     },
     {
-        title: 'HTML5 Cloud Video Editor — онлайн-видеоредактор (SolveigMM)',
-        desc:  'Профессиональный онлайн-видеоредактор для встраивания в LMS и MAM-системы: обрезка и склейка, переходы, текст и графика поверх видео, озвучка, умный рендеринг без потери качества. Задача — дать пользователям редактировать видео прямо в браузере. Роль: UX/UI-дизайн — интерфейс редактора и таймлайна.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-14334&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A14334&show-proto-sidebar=1&page-id=0%3A1',
-        url:   'https://www.solveigmm.com/en/products/html5-cloud-video-editing/',
+        title: 'WorkTimer — Личный кабинет для учёта рабочего времени',
+        desc:  'Внутренний продукт ИНОСТУДИО для учёта рабочего времени сотрудников по проектам. Дашборд, детализация по задачам и статистика занятости — в светлой и тёмной темах. Задача: удобно фиксировать, видеть и анализировать затраченное время. Роль: UX/UI-дизайн — структура, сценарии и интерфейсы, светлая и тёмная темы.',
     },
     {
-        title: 'Termex LTA-Utility — приложение для лабораторных термометров',
-        desc:  'Мобильное приложение (iOS/Android), которое принимает данные с лабораторного термометра, строит по ним графики и настраивает параметры записи. Задача — перенести интерфейс прибора LTA-K в мобильный продукт в связке с разработчиками и метрологами. Роль: UX/UI-дизайн — исследование, прототип (более 80 экранов), дизайн Android и iOS, анимация интерфейса.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=4-21831&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A21831&page-id=0%3A1',
-        url:   'https://standapp.pro/work/termex-app',
+        title: 'ИНОМЕДИА — Медиапортал',
+        desc:  'Корпоративный портал для хранения и публикации медиа и новостей. Фотобанк и видеобанк с категориями и фильтрами, лента новостей, карточки материалов и раздел фирменного стиля. Задача: создать единое хранилище медиа и новостей с быстрым поиском нужных материалов. Роль: UX/UI-дизайн — структура и пользовательские сценарии.',
     },
     {
-        title: 'Rapid Business Cards — цифровые визитки (стартап, США)',
-        desc:  'Приложение для создания и обмена цифровыми визитками и развития сети деловых контактов — продукт стартапа из США. Задача — заменить бумажные визитки и помочь пользователям растить нетворк. Роль: продуктовый дизайн и UX-исследования — экспертный аудит, генерация и отбор идей, дизайн-поддержка.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=10-22805&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=10%3A22775&page-id=0%3A1&show-proto-sidebar=1',
-        url:   'https://standapp.pro/work/rapid-app',
+        title: 'HTML5 Video Editor — Онлайн-видеоредактор (Solveig Multimedia)',
+        desc:  'Профессиональный видеоредактор, работающий прямо в браузере и встраиваемый в LMS и MAM-системы. Обрезка и склейка, переходы, текст и графика поверх видео, озвучка, умный рендеринг без потери качества. Всего спроектировано более 300 экранов. Задача: дать пользователям полноценно монтировать видео прямо в браузере. Роль: UX/UI-дизайн — интерфейс редактора и таймлайна.',
     },
     {
-        title: 'ПАО «Т Плюс» — корпоративное приложение для сотрудников',
-        desc:  'Внутреннее мобильное приложение энергетической компании: новости, корпоративный чат, электронный документооборот, профили сотрудников, благодарности, заявки в поддержку, участие в конференциях. Задача — собрать рабочие сервисы сотрудника в одном приложении. Роль: UX/UI-дизайн — сценарии и интерфейсы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-24448&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A24448&page-id=0%3A1&show-proto-sidebar=1',
-        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-pao-t-plyus',
+        title: 'HyperCam — ПО для создания скринкастов (Solveig Multimedia)',
+        desc:  'Десктопное приложение для Windows, которое записывает всё происходящее на экране в высоком качестве и без потери производительности. Один из лучших инструментов в своём классе: подходит и для коротких демонстраций, и для длинных записей — со звуком, веб-камерой и заметками поверх кадра. Задача: спроектировать инструмент захвата экрана, которым одинаково легко пользоваться новичку и профессионалу (видеопрезентации, обучающие материалы и туториалы, демо-ролики, нарезки из фильмов и игр, запись вебинаров и звонков). Роль: UX/UI-дизайн — интерфейс десктопного приложения под Windows и онлайн-страница для шеринга записанных файлов.',
     },
     {
-        title: 'Инфоклиника.RU — приложение медицинской системы',
-        desc:  'Мобильное приложение для клиник: пациенты записываются на приём, смотрят список визитов, протоколы приёмов и результаты анализов; врачи видят своё расписание и истории болезни пациентов. Задача — дать удобный доступ к записи и медицинским данным. Роль: UX/UI-дизайн — сценарии и интерфейсы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-24974&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A24974&page-id=0%3A1&show-proto-sidebar=1',
-        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-infoclinica-ru',
+        title: 'TERMEX — Мобильное приложение для лабораторного термометра',
+        desc:  'Приложение для iOS и Android, которое принимает данные с лабораторного термометра, строит по ним графики, ведёт градуировку прибора и настраивает параметры записи. Задача: перенести интерфейс прибора LTA-K в мобильный продукт — в связке с разработчиками и метрологами. Роль: UX/UI-дизайн — исследование, прототип (100+ экранов), дизайн для Android и iOS, анимация интерфейса.',
     },
     {
-        title: 'Курчатовская школа — мобильное приложение для родителей',
-        desc:  'Приложение для родителей: новостная лента, запись в кружки дополнительного образования с формированием договора, достижения и награды детей, ведение профилей детей, вход через телефон или mos.ru. Задача — упростить взаимодействие школы и родителей. Роль: UX/UI-дизайн — сценарии и интерфейсы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-25640&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A25640&page-id=0%3A1&show-proto-sidebar=1',
-        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-gbou-kurchatovskaya-shkola',
+        title: 'INFOMATIX — Платформа медиасервисов в общественном транспорте',
+        desc:  'Платформа для показа мультимедийного контента и инфокоммуникационных услуг в общественном транспорте: управление медиа, плейлистами и их рассылкой на транспортные средства, мониторинг состава и статистика. Задача: создать единый портал для управления контентом в общественном транспорте. Роль: UX/UI-дизайн — исследование, прототип (150+ экранов), сценарии и структура.',
     },
     {
-        title: 'Курчатовская школа — веб-сервис',
-        desc:  'Веб-версия сервиса школы: запись в дополнительное образование и оформление договора, профили детей, контактная информация, вход через телефон или mos.ru, панель настроек. Задача — перенести ключевые сценарии родителя в веб. Роль: UX/UI-дизайн — структура и интерфейсы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=12-25854&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=12%3A25854&page-id=0%3A1&show-proto-sidebar=1',
-        url:   'https://it-cron.ru/cases/veb-servis-gbou-kurchatovskaya-shkola',
+        title: 'RAPID Cards — Промо-сайт и ролик цифровой визитки',
+        desc:  'Промо-сайт и видеоролик для мобильного приложения RAPID Cards — цифровой визитной карточки. Сайт рассказывает о продукте и ведёт к скачиванию (оффер, сравнение бумажной и цифровой визитки, тарифы, FAQ), а ролик показывает приложение в действии. Задача: создать сайт-визитку и промо-ролик, которые понятно доносят ценность продукта и конвертируют посетителей в установки. Роль: UX/UI-дизайн — исследование, фирменный стиль на основе элементов логотипа, цветовая палитра, адаптив; промо-ролик приложения (сценарий и анимация).',
     },
     {
-        title: '«Росточки» — мобильное приложение, веб-сайт, разработка логотипа, брендбук',
-        desc:  'Комплексная работа для клиента «Росточки»: мобильное приложение (iOS/Android), веб-сайт, а также разработка логотипа и брендбука. Задача — единый узнаваемый стиль и удобные продукты для пользователей. Роль: UX/UI-дизайн, веб-дизайн и фирменный стиль (логотип, брендбук).',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-14778&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A14778&page-id=0%3A1&show-proto-sidebar=1',
-        url:   'https://it-cron.ru/cases/mobilnoe-prilozhenie-rostochki',
+        title: 'Курчатовская школа — Приложение и веб-сервис для родителей',
+        desc:  'Приложение и веб-версия, где родители решают школьные вопросы онлайн: записывают детей в кружки и дополнительное образование, оформляют договоры, читают новости и ведут профили детей. Вход — по телефону или через mos.ru. Задача: упростить взаимодействие родителей и школы, перенеся рутину в одно окно. Роль: UX/UI-дизайн — информационная структура, сценарии и интерфейсы для веба и мобильных.',
     },
     {
-        title: '«Путь Героя» — интерактивный альбом для «ПАТРИОТ.СПОРТ»',
-        desc:  'Интерактивный веб-альбом о героях Великой Отечественной войны для проекта «ПАТРИОТ.СПОРТ». Задача — придать материалу исторический характер; реализован концепт печатной машинки и свитков. Аудитория — ученики, учителя и администрация школ. Роль: дизайн интерфейса и визуальная концепция.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-14781&viewport=-302%2C110%2C0.13&t=BZIWt9U4lm7TZi1V-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A14781&page-id=0%3A1&show-proto-sidebar=1',
-        url:   'https://it-cron.ru/cases/interaktivnyj-albom-put-geroya-dlya-patriot-sport',
+        title: 'Т Плюс — Внутреннее мобильное приложение',
+        desc:  'Приложение даёт доступ к внутренним сервисам всем сотрудникам — даже тем, у кого нет рабочего ПК или входа в информационные системы. Прямо с телефона можно знакомиться с документами, исполнять поручения, оформлять заявления и отправлять запросы во внутренние службы. Задача: собрать рабочие сервисы сотрудника в одном приложении. Роль: UX/UI-дизайн — сценарии и интерфейсы для iOS и Android.',
     },
     {
-        title: 'ТК «Авангард» — сайт транспортной компании',
-        desc:  'Корпоративный сайт транспортно-логистической компании: услуги грузоперевозок по России, автопарк, расчёт стоимости перевозки, документы и вакансии. Задача — понятный сайт с быстрой заявкой на расчёт. Роль: UX/UI-дизайн — структура, интерфейс, форма заявки.',
-        visual: '',
-        url:   'https://tk-avangard.com/',
+        title: 'Инфоклиника.RU — Мобильное приложение для клиник',
+        desc:  'Приложение для частных клиник, объединяющее пациентов и врачей в одном сервисе. Пациенты записываются на приём, отслеживают визиты, читают протоколы и результаты анализов; врачи ведут расписание и истории болезни. Задача: собрать запись к врачу и доступ к медданным в один понятный сценарий — без звонков в регистратуру. Роль: UX/UI-дизайн — сценарии и интерфейсы для iOS и Android.',
     },
     {
-        title: 'Реалист+ — сайт поставщика нефтепродуктов',
-        desc:  'Сайт компании по оптовой продаже и доставке нефтепродуктов: о компании, продукция, доставка по регионам, контакты, индексы цен. Задача — представить компанию и упростить обращение клиентов. Роль: UX/UI-дизайн — структура и интерфейс.',
-        visual: '',
-        url:   'https://realistplus.ru/',
+        title: 'Путь героя — Веб-сайт',
+        desc:  'Веб-сайт военно-патриотического проекта «Путь героя», посвящённого героям Великой Отечественной войны. Биографии героев, карты их боевых путей, архивные фото и видео. Оформление выдержано в эстетике военных лет: печатная машинка, состаренная бумага, фронтовые карты. Задача: сохранить память о героях и рассказать об их подвигах так, чтобы было интересно и понятно молодёжи. Роль: UX/UI-дизайн — структура, пользовательские сценарии, атмосферный тематический визуальный стиль, адаптив.',
+    },
+    {
+        title: 'Росточки — Бренд и цифровая экосистема сети шиномонтажа',
+        desc:  'Комплексный проект для «Росточек» — сети грузового шиномонтажа, продажи и хранения шин с выездным сервисом по России. Один бренд и единая система: фирменный стиль, промо-сайт, личные кабинеты для клиентов, партнёров и администраторов и приложение для мастеров СТО. Задача: выстроить бренд и связать все цифровые точки в одну систему — от знакомства на сайте до работы мастера в приложении. Роль: UX/UI-дизайн — веб-дизайн, исследование, сценарии и структура; брендинг — логотип, гайд-бук, фирменный паттерн.',
     },
 ];
 
 const CONCEPTS = [
     {
-        title: 'РТК-ЦОД — интерактивная карта «Атлас профессий»',
-        desc:  'Интерактивная карта атлас-профессий для РТК-ЦОД. Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-15505&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=13%3A15505&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'РТК-ЦОД',
+        desc:  'Концепция «Карты профессий» РТК-ЦОД: профориентация в виде интерактивного изометрического города, где районы и здания — это направления и дирекции компании.',
     },
     {
-        title: 'КТК «Талантливым детям» — редизайн сайта',
-        desc:  'Редизайн сайта программы «Талантливым детям» (КТК). Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-15783&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A15783&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'Парк Галицкого',
+        desc:  'Концепция мобильного приложения парка Галицкого в Краснодаре: удобная навигация по парку с карточками объектов, картой и панорамами.',
     },
     {
-        title: 'ЦЕМРОС (БЛОК) — редизайн сайта',
-        desc:  'Редизайн корпоративного сайта ЦЕМРОС (БЛОК). Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-16269&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A16269&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'Роснефть',
+        desc:  'Дизайн-концепция мобильного приложения сети АЗС «Роснефть»: по итогам юзабилити-аудита переработаны навигация, личный кабинет, регистрация и программа лояльности.',
     },
     {
-        title: 'Росконцерт — редизайн сайта',
-        desc:  'Редизайн сайта «Росконцерт». Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-16766&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A16766&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'КТК — Талантливым детям',
+        desc:  'Концепция лендинга международного конкурса-фестиваля для юных талантов: яркая афиша с номинациями, этапами и приёмом заявок.',
     },
     {
-        title: 'SLK Cement — редизайн сайта',
-        desc:  'Редизайн сайта SLK Cement. Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-16968&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A16968&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'Норникель',
+        desc:  'Концепция карьерного сайта «Норникеля»: вакансии, преимущества работодателя и анкета соискателя — с акцентом на развитие и стабильность.',
     },
     {
-        title: 'Нефтехимия — редизайн сайта',
-        desc:  'Редизайн корпоративного сайта (нефтехимия). Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-17324&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A17324&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'Росконцерт',
+        desc:  'Концепция страницы «Проекты» сайта «Росконцерта» — витрина концертных программ и культурных инициатив в крупной выразительной типографике.',
     },
     {
-        title: 'Норникель — карьерный сайт',
-        desc:  'Дизайн карьерного сайта «Норникель». Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-17889&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A17889&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'Нефтехимия',
+        desc:  'Концепция корпоративного сайта производителя полипропилена: продукция, сертификаты, экология и карьера в сдержанном деловом стиле.',
     },
     {
-        title: 'СЛПК — онлайн-магазин',
-        desc:  'Онлайн-магазин для СЛПК. Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-18332&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A18332&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'ЦЕМРОС',
+        desc:  'Концепция сайта производителя газобетона «ЦЕМРОС Блок»: каталог блоков, калькулятор расчёта и реализованные объекты в чистом «строительном» стиле.',
     },
     {
-        title: 'X5 Tech — карьерный сайт',
-        desc:  'Дизайн карьерного сайта X5 Tech. Концепт главной страницы.',
-        visual: 'https://www.figma.com/proto/j4dx2aaeAsuF6zN9dovGre/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE-%D0%90%D1%80%D1%82%D1%91%D0%BC-%D0%A1%D1%83%D1%81%D0%BB%D0%BE%D0%B2?node-id=13-18581&viewport=288%2C295%2C0.06&t=kIy2fdrsW4RvdYUt-1&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=13%3A18581&show-proto-sidebar=1&page-id=13%3A15499',
+        title: 'СЛПК (онлайн-магазин)',
+        desc:  'Концепция интернет-магазина для заказа бумаги: каталог по типам продукции, быстрый заказ, расчёт доставки и отслеживание в фирменном стиле.',
+    },
+    {
+        title: 'SLK Cement',
+        desc:  'Концепция карьерного сайта SLK Cement: вакансии завода с зарплатами и требованиями, ценности компании и анкета соискателя в строгом корпоративном стиле.',
+    },
+    {
+        title: 'X5 Tech',
+        desc:  'Концепция карьерного сайта X5 Tech: подбор IT-вакансий по стеку, митапы и технологии команды — в смелом тёмном дизайне с неоновыми акцентами.',
     },
 ];
+
 
 // ══════════════════════════════════════════════════════
 //  BOOT SEQUENCE
@@ -862,6 +940,28 @@ class Terminal {
         }
     }
 
+    // Клик по кнопке «Выполнить команду»: «печатаем» команду в строку
+    // ввода и автоматически отправляем её.
+    runCmd(cmd) {
+        this.inp.value = cmd;
+        this.inp.focus();
+        clearTimeout(this._runTimer);
+        this._runTimer = setTimeout(() => {
+            this.inp.value = '';
+            this.history.unshift(cmd);
+            this.histIdx = -1;
+            this.exec(cmd);
+            // если запустилась игра — фокус на игровое поле (иначе клавиши
+            // управления не работают); иначе возвращаем фокус в строку ввода
+            if (this.gameRunning) {
+                const area = document.getElementById('gameArea');
+                if (area && area.focus) area.focus();
+            } else {
+                this.inp.focus();
+            }
+        }, 260);
+    }
+
     esc(s) {
         return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     }
@@ -884,18 +984,48 @@ class Terminal {
         this.blank();
         this.line('В&nbsp;компании проектирую цифровые системы для&nbsp;управления бизнес-процессами и&nbsp;взаимодействия с&nbsp;людьми.', 'dim');
         this.blank();
-        this.line('┌─ ДОСТУПНЫЕ КОМАНДЫ ──────────────────────────────┐', 'info');
-        this.line('│', 'info');
-        this.line('│  <span style="color:var(--green)">about</span>     — немного обо&nbsp;мне и&nbsp;о&nbsp;работе в&nbsp;ИНОСТУДИО', 'info');
-        this.line('│  <span style="color:var(--green)">skills</span>    — инструменты и&nbsp;навыки', 'info');
-        this.line('│  <span style="color:var(--green)">projects</span>  — реализованные проекты', 'info');
-        this.line('│  <span style="color:var(--green)">concepts</span>  — дизайн-концепты', 'info');
-        this.line('│', 'info');
-        this.line('│  <span style="color:var(--yellow)">game</span>      — мини-игра (космо-шутер)', 'info');
-        this.line('│  <span style="color:var(--yellow)">hack</span>      — попробуйте...👀', 'info');
-        this.line('│  <span style="color:var(--yellow)">clear</span>     — очистить терминал', 'info');
-        this.line('│', 'info');
-        this.line('└──────────────────────────────────────────────────┘', 'info');
+        this.line(`
+            <div class="cmd-menu">
+                <div class="cmd-menu-title">ДОСТУПНЫЕ КОМАНДЫ</div>
+                <div class="cmd-menu-hint">Введите команду в&nbsp;строке ниже и&nbsp;нажмите Enter — или&nbsp;просто нажмите «Выполнить команду».</div>
+
+                <div class="cmd-row">
+                    <span class="cmd-name green">about</span>
+                    <span class="cmd-desc">немного обо&nbsp;мне и&nbsp;о&nbsp;работе в&nbsp;ИНОСТУДИО</span>
+                    <button class="run-cmd-btn" onclick="terminal.runCmd('about')">▶ Выполнить команду</button>
+                </div>
+                <div class="cmd-row">
+                    <span class="cmd-name green">skills</span>
+                    <span class="cmd-desc">инструменты и&nbsp;навыки</span>
+                    <button class="run-cmd-btn" onclick="terminal.runCmd('skills')">▶ Выполнить команду</button>
+                </div>
+                <div class="cmd-row">
+                    <span class="cmd-name green">projects</span>
+                    <span class="cmd-desc">реализованные проекты</span>
+                    <button class="run-cmd-btn" onclick="terminal.runCmd('projects')">▶ Выполнить команду</button>
+                </div>
+                <div class="cmd-row">
+                    <span class="cmd-name green">concepts</span>
+                    <span class="cmd-desc">дизайн-концепты</span>
+                    <button class="run-cmd-btn" onclick="terminal.runCmd('concepts')">▶ Выполнить команду</button>
+                </div>
+                <div class="cmd-row">
+                    <span class="cmd-name yellow">game</span>
+                    <span class="cmd-desc">мини-игра (космо-шутер)</span>
+                    <button class="run-cmd-btn" onclick="terminal.runCmd('game')">▶ Выполнить команду</button>
+                </div>
+                <div class="cmd-row">
+                    <span class="cmd-name yellow">hack</span>
+                    <span class="cmd-desc">попробуйте...👀</span>
+                    <button class="run-cmd-btn" onclick="terminal.runCmd('hack')">▶ Выполнить команду</button>
+                </div>
+                <div class="cmd-row">
+                    <span class="cmd-name yellow">clear</span>
+                    <span class="cmd-desc">очистить терминал</span>
+                    <button class="run-cmd-btn" onclick="terminal.runCmd('clear')">▶ Выполнить команду</button>
+                </div>
+            </div>
+        `, '');
         this.blank();
     }
 
@@ -971,15 +1101,14 @@ class Terminal {
             const n = String(i + 1).padStart(2, '0');
             this.line(`<span class="proj-title">${n}. ${this.typo(p.title)}</span>`, 'proj');
             if (p.desc) this.line(`<span class="proj-desc">${this.typo(p.desc)}</span>`);
-            if (p.url) {
-                const label = p.url.replace(/^https?:\/\//, '').replace(/\/+$/, '');
-                this.line(`<span class="proj-link">↗ <a href="${p.url}" target="_blank" rel="noopener">${this.esc(label)}</a></span>`);
-            }
-            if (p.visual) {
-                this.line(`<span class="proj-link">🔗 <a href="${p.visual}" target="_blank" rel="noopener">ссылка на&nbsp;визуал</a></span>`);
-            }
             this.blank();
         });
+
+        // Общая кнопка на прототип в Figma
+        if (CONFIG.figma) {
+            this.line(`<a class="view-projects-btn" href="${CONFIG.figma}" target="_blank" rel="noopener">▶ Смотреть проекты</a>`);
+            this.blank();
+        }
     }
 
 
@@ -991,7 +1120,8 @@ class Terminal {
         this.line('// invaders.exe — загружен', 'success');
         this.line('Цель: за&nbsp;60&nbsp;секунд сбить как&nbsp;можно больше 🐛 багов, 🤖 ботов, 🦠 вирусов.', 'dim');
         this.line('Управление: <span style="color:var(--yellow)">↑/↓</span> или&nbsp;мышь — движение · <span style="color:var(--yellow)">SPACE</span>/клик — огонь.', 'dim');
-        this.line('Команда <span style="color:var(--yellow)">start</span> — начать. <span style="color:var(--yellow)">exit</span> или&nbsp;Esc — закрыть.', 'dim');
+        this.line('Команда <span style="color:var(--yellow)">start</span> — начать <button class="run-cmd-btn inline" onclick="terminal.runCmd(\'start\')">▶ Выполнить команду</button>', 'dim');
+        this.line('Команда <span style="color:var(--yellow)">exit</span> — закрыть <button class="run-cmd-btn inline" onclick="terminal.runCmd(\'exit\')">▶ Выполнить команду</button>', 'dim');
         this.blank();
     }
 
@@ -1008,8 +1138,11 @@ class Terminal {
         this.lastShot = 0;
         this.spawnTimer = 0;
         this.spawnEvery = 850;
+        this.speedMul = 1;
         document.getElementById('gameScore').textContent = '0';
-        document.getElementById('gameTime').textContent = '60';
+        const tEl0 = document.getElementById('gameTime');
+        tEl0.textContent = '60';
+        tEl0.style.color = 'var(--green)';
 
         const ship = document.getElementById('ship');
         this.shipH = ship.offsetHeight || 26;
@@ -1047,8 +1180,15 @@ class Terminal {
 
         // таймер
         const timeLeft = Math.max(0, 60 - (now - this._gameStart) / 1000);
-        document.getElementById('gameTime').textContent = Math.ceil(timeLeft);
+        const t = Math.ceil(timeLeft);
+        const tEl = document.getElementById('gameTime');
+        tEl.textContent = t;
+        // зелёный → жёлтый на 40с → красный на 20с
+        tEl.style.color = t <= 20 ? 'var(--red)' : (t <= 40 ? 'var(--yellow)' : 'var(--green)');
         if (timeLeft <= 0) { this._gameOver(); return; }
+
+        // скорость врагов по этапам: 60–40с — обычная, 39–20с — чуть быстрее, 19–1с — ещё быстрее
+        this.speedMul = t <= 19 ? 1.5 : (t <= 39 ? 1.25 : 1);
 
         // движение корабля клавишами
         const sp = 230 * dt;
@@ -1119,7 +1259,7 @@ class Terminal {
         el.textContent = types[Math.floor(Math.random() * types.length)];
         const y = Math.random() * (H - 28);
         const x = W + 10;
-        const v = 70 + Math.random() * 95; // px/сек
+        const v = (100 + Math.random() * 110) * (this.speedMul || 1); // px/сек
         el.style.left = x + 'px';
         el.style.top = y + 'px';
         area.appendChild(el);
@@ -1279,12 +1419,14 @@ document.addEventListener('DOMContentLoaded', runBoot);
 /* ══════════════════════════════════════════════════════
    ПАМЯТКА (можно удалить)
 
-   ПОЛЕ visual В ПРОЕКТАХ/КОНЦЕПТАХ — необязательная ссылка на
-   визуал: скрины, изображения или прототип. Подойдёт ЛЮБАЯ ссылка
-   (Я.Диск, Google Drive, Figma, Behance, imgbb и т.п.) — открывать
-   прямую ссылку на файл не нужно, это просто гиперссылка.
-   В терминале она показывается как «ссылка на визуал» и открывается
-   в новой вкладке. Если visual: '' — строка не выводится.
+   РАБОТЫ. Каждый блок в PROJECTS и CONCEPTS — это { title, desc }.
+   Отдельные ссылки на кейсы убраны: показываются только название
+   и описание. В конце обоих списков выводится общая кнопка
+   «Смотреть проекты» — её ссылка задаётся в CONFIG.figma (вверху).
+
+   КОМАНДЫ. Рядом с каждой командой в меню есть кнопка
+   «Выполнить команду»: по клику команда подставляется в строку
+   ввода и автоматически отправляется (метод terminal.runCmd).
    ══════════════════════════════════════════════════════ */
 </script>
 </body>
