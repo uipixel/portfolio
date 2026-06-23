@@ -680,11 +680,6 @@ const CONFIG = {
 // Две раздельные команды:
 //   PROJECTS — реализованные проекты (команда projects)
 //   CONCEPTS — дизайн-концепты       (команда concepts)
-// Добавить работу = добавить блок { title, desc }.
-//  title — название работы.
-//  desc  — описание (тайтл + описание).
-// Ссылки на отдельные кейсы убраны. В конце обоих списков —
-// общая кнопка «Смотреть проекты» (ссылка задаётся в CONFIG.figma).
 
 const PROJECTS = [
     {
@@ -1057,7 +1052,9 @@ class Terminal {
         this.blank();
         this.line('Веду задачу от&nbsp;исследования и&nbsp;прототипа до&nbsp;готового решения.');
         this.line('Работаю в&nbsp;связке с&nbsp;разработчиками.');
-        this.line('Использую AI в&nbsp;рабочем процессе.');
+        this.line('Активно использую AI — в&nbsp;дизайне и&nbsp;в&nbsp;коде.');
+        this.line('Это портфолио и&nbsp;пару интерактивных игр закодил сам, с&nbsp;ИИ.');
+        this.line('Был старшим дизайнером и&nbsp;наставником в&nbsp;команде.');
         this.blank();
         this.line('Работы → команды <span style="color:var(--yellow)">projects</span> и&nbsp;<span style="color:var(--yellow)">concepts</span>', 'dim');
         this.blank();
