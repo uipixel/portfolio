@@ -647,7 +647,7 @@
     </div>
 
     <div class="statusbar">
-        <div class="sb-item"><div class="dot"></div> Суслов Артём // UX/UI Designer // ИНОСТУДИО</div>
+        <div class="sb-item"><div class="dot"></div> Суслов Артём // UX/UI Designer</div>
         <div class="sb-sep">|</div>
         <div class="sb-item">Figma · UX/UI · I love Design · AI</div>
         <div class="sb-sep">|</div>
@@ -662,7 +662,7 @@
 const CONFIG = {
     name:    'Суслов Артём',
     role:    'UX/UI Designer',
-    company: 'ИНОСТУДИО',
+    
 
     // Общая ссылка на прототип в Figma (кнопка «Смотреть проекты»
     // в конце списков projects и concepts)
@@ -983,10 +983,9 @@ class Terminal {
     showWelcome() {
         this.line('<span class="smiley-logo">(*^‿^*)</span>', '');
         this.blank();
-        this.line('Суслов Артём // UX/UI Designer // ИНОСТУДИО', 'header');
+        this.line('Суслов Артём // UX/UI Designer', 'header');
         this.blank();
-        this.line('В&nbsp;компании проектирую цифровые системы для&nbsp;управления бизнес-процессами и&nbsp;взаимодействия с&nbsp;людьми.', 'dim');
-        this.blank();
+
         this.line(`
             <div class="cmd-menu">
                 <div class="cmd-menu-title">ДОСТУПНЫЕ КОМАНДЫ</div>
@@ -994,7 +993,7 @@ class Terminal {
 
                 <div class="cmd-row">
                     <span class="cmd-name green">about</span>
-                    <span class="cmd-desc">немного обо&nbsp;мне и&nbsp;о&nbsp;работе в&nbsp;ИНОСТУДИО</span>
+                    <span class="cmd-desc">немного обо&nbsp;мне</span>
                     <button class="run-cmd-btn" onclick="terminal.runCmd('about')">▶ Выполнить команду</button>
                 </div>
                 <div class="cmd-row">
@@ -1065,19 +1064,19 @@ class Terminal {
         this.line('── SKILLS ─────────────────────────────────────────', 'header');
         this.blank();
         this.line('DESIGN', 'yellow');
-        this.line('Figma · Photoshop · Illustrator · Animate · Tumult Hype', 'success');
+        this.line('Figma · Photoshop · Illustrator · Animate · Tumult Hype · Pencil', 'success');
         this.blank();
         this.line('NO-CODE / LOW-CODE', 'yellow');
         this.line('Webflow · Tilda · TapTop · Figma Sites', 'success');
         this.blank();
         this.line('AI TOOLS', 'yellow');
-        this.line('Figma AI · Claude · Claude Design · Leonardo · Weavy · Pencil', 'success');
+        this.line('Figma AI · Claude · Claude Design · Leonardo · Weavy', 'success');
         this.blank();
         this.line('DEVELOPMENT UNDERSTANDING', 'yellow');
-        this.line('HTML/CSS basics · Responsive · Design tokens · Handoff · VS Code', 'success');
+        this.line('HTML/CSS · VS Code · Вайб-кодинг', 'success');
         this.blank();
         this.line('SPECIALIZATION', 'yellow');
-        this.line('B2B & B2C product design · UX research · Design systems · Mentoring', 'success');
+        this.line('B2B и B2C продукты · UX-исследования · Дизайн-системы · Наставничество', 'success');
         this.blank();
     }
 
